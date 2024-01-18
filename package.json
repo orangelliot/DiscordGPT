@@ -1,0 +1,20 @@
+{
+  "name": "clippybot",
+  "version": "1.0.0",
+  "description": "GPT integration discord bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "Elliot Fisk",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.3.1",
+    "node-fetch": "^3.3.2",
+    "openai": "^4.20.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.54.0"
+  }
+}
