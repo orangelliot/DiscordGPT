@@ -25,4 +25,9 @@ module.exports = class Conversation {
         this.chathistory.push({ role: 'assistant', content: response.choices[0].message.content})
         return response.choices[0].message.content;
     };
+
+    async setprompt(newprompt){
+        if(newprompt != 0)
+            this.chathistory[0] = {role: 'system', content: newprompt};
+    };
 };
