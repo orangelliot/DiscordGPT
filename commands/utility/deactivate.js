@@ -6,9 +6,7 @@ module.exports = {
     category: 'utility',
     data: new SlashCommandBuilder()
         .setName('deactivate')
-        .setDescription('Deactivates Clippy in this channel')
-        .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
-        .setDMPermission(false),
+        .setDescription('Deactivates Clippy in this channel'),
     async execute(interaction) {
         const data = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../appdata.json')))
         data.servers[interaction.guild.id + '.' + interaction.channel.id] = 0;

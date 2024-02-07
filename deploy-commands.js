@@ -33,12 +33,15 @@ const rest = new REST().setToken(discord.token);
 		console.log(`Started refreshing ${commands.length} application (/) commands.`);
 
 		// The put method is used to fully refresh all commands in the guild with the current set
-		const data = await rest.put(
-			Routes.applicationGuildCommands(discord.clientId, discord.guildId),
-			{ body: commands },
-		);
+		for (guild in discord.guilds){
+			const data = await rest.put(
+				Routes.applicationGuildCommands(discord.clientId, discord.guilds[guild]),
+				{ body: commands },
+			);
 
-		console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+			console.log(`Successfully reloaded ${data.length} application (/) commands in ${guild}`);
+		}
+		
 	} catch (error) {
 		// And of course, make sure you catch and log any errors!
 		console.error(error);

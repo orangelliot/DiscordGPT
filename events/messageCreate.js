@@ -7,18 +7,14 @@ const conversationManager = new ConversationManager()
 module.exports = {
     name: Events.MessageCreate,
 	once: false,
+    conversationManager: conversationManager,
     async execute(message){
-        if(message.content.toLowerCase().includes('hey clippy') || conversationManager.hasActiveConvo(message.channel) && !message.author.bot && appdata.servers[message.guild.id + '.' + message.channel_id] == 1){
-            const response = await conversationManager.request(message);
-            const channel = message.channel;
-            if (channel && channel.type === 0 && response !== -1) {
-                await channel.send(response);
-            }
+        if((message.content.toLowerCase().includes('hey clippy') || conversationManager.hasActiveConvo(message.channel.id)) && !message.author.bot && appdata.servers[message.guild.id + '.' + message.channel.id] == 1){
+            await conversationManager.request(message);
+        }
+
+        if(message.content.toLowerCase().includes('goodbye clippy') && conversationManager.hasActiveConvo(message.channel.id)){
+            delete conversationManager.activeconvos[message.channel.id];
         }
     }
 }
-
-setInterval(function(){
-	conversationManager.cleanupInactiveConvos();
-	console.log('cleaning up inactive convos...')
-}, 10000);

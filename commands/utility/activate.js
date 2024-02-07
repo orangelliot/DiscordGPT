@@ -6,12 +6,11 @@ module.exports = {
     category: 'utility',
     data: new SlashCommandBuilder()
         .setName('activate')
-        .setDescription('Activates Clippy in this channel')
-        .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
-        .setDMPermission(false),
+        .setDescription('Activates Clippy in this channel'),
     async execute(interaction) {
         const data = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../appdata.json')))
         data.servers[interaction.guild.id + '.' + interaction.channel.id] = 1;
+        console.log(interaction.guild.id + ', ' + interaction.channel.id);
         const updated = JSON.stringify(data)
         fs.writeFileSync(path.resolve(__dirname, '../../appdata.json'), updated)
         await interaction.reply(`Channel ${interaction.channel.name} is now active.`);

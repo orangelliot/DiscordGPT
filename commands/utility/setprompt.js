@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { conversationManager } = require('../events/messageCreate.js')
+const { conversationManager } = require('../../events/messageCreate.js')
 
 module.exports = {
     category: 'utility',
@@ -9,11 +9,9 @@ module.exports = {
         .addStringOption(option =>
 			option
 				.setName('prompt')
-				.setDescription('The new intial prompt for Clippy'))
-                .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
-                .setDMPermission(false),
+				.setDescription('The new intial prompt for Clippy')),
     async execute(interaction){
         const prompt = interaction.options.getString('prompt') ?? 0;
-        conversationManager.hasActiveConvo(interaction.channel.id).setPrompt(prompt);
+        conversationManager.hasActiveConvo(interaction.channel.id)?.setPrompt(prompt);
     }
 }
