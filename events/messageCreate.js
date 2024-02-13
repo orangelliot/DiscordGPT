@@ -9,7 +9,8 @@ module.exports = {
 	once: false,
     conversationManager: conversationManager,
     async execute(message){
-        if((message.content.toLowerCase().includes('hey clippy') || conversationManager.hasActiveConvo(message.channel.id)) && !message.author.bot && appdata.servers[message.guild.id + '.' + message.channel.id] == 1){
+        if((message.content.toLowerCase().includes('hey clippy') || conversationManager.hasActiveConvo(message.channel.id))
+            && !message.author.bot && appdata.guilds[message.guild.id + '.' + message.channel.id] == 1){
             await conversationManager.request(message);
         }
 

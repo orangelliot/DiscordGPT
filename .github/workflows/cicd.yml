@@ -1,0 +1,30 @@
+name: deploy to azure
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout source
+        uses: actions/checkout@v3
+
+      - name: setup nodejs env
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+      
+      - name: install dependencies
+        run: npm install
+      
+      - name: deploy to azure
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: DiscordGPT
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: .

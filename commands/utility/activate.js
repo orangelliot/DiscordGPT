@@ -9,7 +9,7 @@ module.exports = {
         .setDescription('Activates Clippy in this channel'),
     async execute(interaction) {
         const data = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../appdata.json')))
-        data.servers[interaction.guild.id + '.' + interaction.channel.id] = 1;
+        data.guilds[interaction.guild.id + '.' + interaction.channel.id] = 1;
         console.log(interaction.guild.id + ', ' + interaction.channel.id);
         const updated = JSON.stringify(data)
         fs.writeFileSync(path.resolve(__dirname, '../../appdata.json'), updated)
