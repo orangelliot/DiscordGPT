@@ -1,6 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const fs = require('fs');
-const path = require('path');
+const { appdata } = require('../../data-controller.js');
 
 module.exports = {
     category: 'utility',
@@ -8,10 +7,7 @@ module.exports = {
         .setName('activate')
         .setDescription('Activates Clippy in this channel'),
     async execute(interaction) {
-        const data = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../appdata.json')))
-        data.guilds[interaction.guild.id + '.' + interaction.channel.id] = 1;
-        const updated = JSON.stringify(data)
-        fs.writeFileSync(path.resolve(__dirname, '../../appdata.json'), updated)
+        appdata.guilds[interaction.guild.id + '.' + interaction.channel.id] = 1;
         await interaction.reply(`Channel ${interaction.channel.name} is now active.`);
     }
 }
