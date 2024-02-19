@@ -1,6 +1,6 @@
 const { Events } = require('discord.js');
 const ConversationManager = require('../chatgpt/conversationManager');
-const { appdata } = require('../data-controller.js')
+const { appdata } = require('../data/data-controller.js')
 
 const conversationManager = new ConversationManager()
 

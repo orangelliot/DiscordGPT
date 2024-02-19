@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { appdata } = require('../../data-controller.js');
+const { appdata } = require('../../data/data-controller.js');
 
 module.exports = {
     category: 'utility',

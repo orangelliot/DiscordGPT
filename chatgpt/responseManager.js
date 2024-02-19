@@ -4,7 +4,6 @@ module.exports = class ResponseManager{
     chunkbuffer = '';
     noresponseregex = /[nN][oO][\s,.]*[rR][eE][sS][pP][oO][nN][sS][eE][,.]*/;
     async sendResponse(response, channel) {
-        console.log('test');
         for await (const chunk of response) {
             const chunkcontent = chunk.choices[0].delta.content || '';
             this.chunkbuffer += chunkcontent;

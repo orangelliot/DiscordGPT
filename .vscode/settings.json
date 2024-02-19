@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "undefined/subscriptions/eb1a7542-5057-44cc-ab93-db3942fea24a/resourceGroups/DiscordGPT/providers/Microsoft.Web/sites/DiscordGPT",
+    "appService.deploySubpath": "."
+}

@@ -5,7 +5,8 @@ require('dotenv').config()
 module.exports = class Conversation {
     constructor() {
         this.openai = new OpenAI({
-            organization: process.env.GPT_ORGKEY
+            organization: process.env.GPT_ORGKEY,
+            apiKey: process.env.GPT_APIKEY
         });
         this.chathistory = [{ role: 'system', content: 'you are a discord bot named clippy. you chat to users in an informal manner. respond breifly. if a message does not appear to be addressed to you reply with \'no response\'. if the user appears to be addressing other users wihout explicitly including you reply with \'no response\''}]
     };
