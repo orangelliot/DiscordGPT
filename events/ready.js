@@ -11,5 +11,4 @@ module.exports = {
 
 setInterval(function(){
 	conversationManager.cleanupInactiveConvos();
-	console.log('cleaning up inactive convos...')
 }, 10000);
