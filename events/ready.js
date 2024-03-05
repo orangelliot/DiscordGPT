@@ -6,9 +6,10 @@ module.exports = {
 	once: true,
 	execute(client) {
 		console.log(`Ready! Logged in as ${client.user.tag}`);
+		console.log(`timing out conversations after ${120000/1000} seconds`)
 	},
 };
 
 setInterval(function(){
 	conversationManager.cleanupInactiveConvos();
-}, 10000);
+}, 30000);
