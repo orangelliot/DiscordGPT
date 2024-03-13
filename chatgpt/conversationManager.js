@@ -17,8 +17,7 @@ module.exports = class ConversationManager{
     cleanupInactiveConvos(){
         const timenow = Date.now();
         for (const [key, value] of Object.entries(this.activeconvos)){
-            console.log(`checking kv pair: ${key}, ${value}`);
-            if(key.includes('timestamp') && (timenow - value) > 120000){
+            if(key.includes('timestamp') && (timenow - value) > 1200000){
                 delete this.activeconvos[key];
                 delete this.activeconvos[key.split('.')[0]]
                 console.log(`timed out conversation in ${key}`);

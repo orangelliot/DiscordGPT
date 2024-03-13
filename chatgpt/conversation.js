@@ -44,7 +44,6 @@ module.exports = class Conversation {
     async summarize(){
         let summaryportion = this.chathistory.slice(1, Math.ceil(this.chathistory.length/2.0));
             summaryportion.push({role: 'user', content: 'summarize the conversation so far in 1000 characters or less'});
-            console.log(summaryportion);
             const summary = await this.openai.chat.completions.create({
                 messages: summaryportion,
                 model: 'gpt-4-turbo-preview',
@@ -55,7 +54,6 @@ module.exports = class Conversation {
                                 {role: 'system', content: `here is a summary of the conversation so far: ${summary.choices[0].message.content}`}].concat(this.chathistory.slice(Math.ceil(this.chathistory.length/2.0) + 1, this.chathistory.length));
             let fullchathistory = '';
             this.chathistory.forEach((msg) => fullchathistory += msg.content);
-            console.log(`summarized chat! new history is\n${fullchathistory}`);
     }
 
     async setprompt(newprompt){
