@@ -9,7 +9,7 @@ module.exports = class Conversation {
             apiKey: process.env.GPT_APIKEY
         });
         this.chathistory = [{ role: 'system', content: 'you are a discord bot named clippy. you chat to users in an informal manner. respond breifly. if a message does not appear to be addressed to you reply with \'no response\'. if the user appears to be addressing other users wihout explicitly including you reply with \'no response\''}]
-    };
+    }
 
     async request(message) {
         const noresponseregex = /[nN][oO][\s,.]*[rR][eE][sS][pP][oO][nN][sS][eE][,.]*/;
@@ -33,13 +33,11 @@ module.exports = class Conversation {
         this.chathistory.push({ role: 'assistant', content: response});
         let fullchathistory = '';
         this.chathistory.forEach((msg) => fullchathistory += msg.content)
-        //console.log(fullchathistory.length);
-        //console.log(fullchathistory)
         if(fullchathistory.length > 500){
             this.summarize();
         }
         return response;
-    };
+    }
 
     async summarize(){
         let summaryportion = this.chathistory.slice(1, Math.ceil(this.chathistory.length/2.0));
@@ -61,5 +59,5 @@ module.exports = class Conversation {
             this.chathistory[0] = {role: 'system', content: newprompt};
         else
             console.log('attempted to set non-string prompt');
-    };
-};
+    }
+}

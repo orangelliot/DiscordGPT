@@ -1,6 +1,6 @@
 const { Events } = require('discord.js');
 const ConversationManager = require('../chatgpt/conversationManager');
-const { appdata } = require('../data/data-controller.js')
+const { appdata } = require('../data/dataController.js')
 
 const conversationManager = new ConversationManager()
 
@@ -10,8 +10,8 @@ module.exports = {
     conversationManager: conversationManager,
     async execute(message){
         if(
-        appdata.guilds[message.guild.id + '.' + message.channel.id] != null &&
-        appdata.guilds[message.guild.id + '.' + message.channel.id] == 1 &&
+        appdata.active_channels[message.guild.id + '.' + message.channel.id] != null &&
+        appdata.active_channels[message.guild.id + '.' + message.channel.id] == 1 &&
         !message.author.bot &&
         (message.content.toLowerCase().includes('hey clippy') || conversationManager.hasActiveConvo(message.channel.id))){
             await conversationManager.request(message);

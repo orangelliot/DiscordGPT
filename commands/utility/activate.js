@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { appdata } = require('../../data/data-controller.js');
+const { appdata } = require('../../data/dataController.js');
 
 module.exports = {
     category: 'utility',
@@ -7,7 +7,7 @@ module.exports = {
         .setName('activate')
         .setDescription('Activates Clippy in this channel'),
     async execute(interaction) {
-        appdata.guilds[interaction.guild.id + '.' + interaction.channel.id] = 1;
+        appdata.active_channels[interaction.guild.id + '.' + interaction.channel.id] = 1;
         await interaction.reply(`Channel ${interaction.channel.name} is now active.`);
     }
 }

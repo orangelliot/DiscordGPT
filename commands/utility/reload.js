@@ -29,4 +29,4 @@ module.exports = {
 	        await interaction.reply(`There was an error while reloading a command \`${command.data.name}\`:\n\`${error.message}\``);
 		}
 	},
-};
+}

@@ -1,5 +1,6 @@
 const { Events } = require('discord.js');
 const { conversationManager } = require('./messageCreate');
+const dataController = require('../data/dataController')
 
 module.exports = {
 	name: Events.ClientReady,
@@ -12,4 +13,5 @@ module.exports = {
 
 setInterval(function(){
 	conversationManager.cleanupInactiveConvos();
+	dataController.write_data();
 }, 30000);

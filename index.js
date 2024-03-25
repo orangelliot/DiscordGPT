@@ -6,6 +6,8 @@ require('dotenv').config();
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages] });
 
+
+
 client.commands = new Collection();
 client.cooldowns = new Collection();
 
