@@ -8,7 +8,9 @@ module.exports = class Conversation {
             organization: process.env.GPT_ORGKEY,
             apiKey: process.env.GPT_APIKEY
         });
-        this.chathistory = [{ role: 'system', content: 'you are a discord bot named clippy. you chat to users in an informal manner. respond breifly. if a message does not appear to be addressed to you reply with \'no response\'. if the user appears to be addressing other users wihout explicitly including you reply with \'no response\''}]
+        this.intialprompt = 'you are a discord bot named clippy. you chat to users in an informal manner. respond breifly.';
+        this.chathistory = [{ role: 'system', content: 'if a message does not appear to be addressed to you reply with \'no response\'. if the user appears to be addressing other users wihout explicitly including you reply with \'no response\''},
+                            { role: 'system', content: this.intialprompt}];
     }
 
     async request(message) {
@@ -21,10 +23,9 @@ module.exports = class Conversation {
             temperature: 1.0,
             stream: true,
         });
-
+        console.log(`gpt responds`);
         const responseManager = new ResponseManager();
         const response = await responseManager.sendResponse(responsestream, message.channel);
-        console.log(`gpt responds`);
         /*if(response.match(noresponseregex)){
             this.chathistory.pop();
             return -1;
@@ -48,15 +49,18 @@ module.exports = class Conversation {
                 temperature: 1.0,
                 stream: false,
             });
-            this.chathistory = [{role: 'system', content: 'you are a discord bot named clippy. you chat to users in an informal manner. respond breifly. if a message does not appear to be addressed to you reply with \'no response\'. if the user appears to be addressing other users wihout explicitly including you reply with \'no response\''},
-                                {role: 'system', content: `here is a summary of the conversation so far: ${summary.choices[0].message.content}`}].concat(this.chathistory.slice(Math.ceil(this.chathistory.length/2.0) + 1, this.chathistory.length));
+            this.chathistory = [{ role: 'system', content: 'if a message does not appear to be addressed to you reply with \'no response\'. if the user appears to be addressing other users wihout explicitly including you reply with \'no response\''},
+                                { role: 'system', content: this.intialprompt},
+                                { role: 'system', content: `here is a summary of the conversation so far: ${summary.choices[0].message.content}`}].concat(this.chathistory.slice(Math.ceil(this.chathistory.length/2.0) + 1, this.chathistory.length));
             let fullchathistory = '';
             this.chathistory.forEach((msg) => fullchathistory += msg.content);
     }
 
     async setprompt(newprompt){
-        if(typeof newprompt == String)
-            this.chathistory[0] = {role: 'system', content: newprompt};
+        if(typeof newprompt == String){
+            this.chathistory[1] = {role: 'system', content: newprompt};
+            this.initialprompt = newprompt;
+        }
         else
             console.log('attempted to set non-string prompt');
     }
