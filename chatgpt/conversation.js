@@ -1,22 +1,30 @@
 const OpenAI = require('openai');
-const ResponseManager = require('./responseManager');
+const ResponseHandler = require('./responseHandler.js');
+const dataController = require('../data/dataController.js');
 require('dotenv').config()
 
+NAME_INDEX = 0
+INITIAL_PROMPT_INDEX = 1
+
 module.exports = class Conversation {
-    constructor() {
+    constructor(guildid, channelid) {
         this.openai = new OpenAI({
             organization: process.env.GPT_ORGKEY,
             apiKey: process.env.GPT_APIKEY
         });
-        this.intialprompt = 'you are a discord bot named clippy. you chat to users in an informal manner. respond breifly.';
-        this.chathistory = [{ role: 'system', content: 'if a message does not appear to be addressed to you reply with \'no response\'. if the user appears to be addressing other users wihout explicitly including you reply with \'no response\''},
-                            { role: 'system', content: this.intialprompt}];
+        this.chathistory = [{ role: 'system', content: 0},
+                            { role: 'system', content: 0},
+                            { role: 'system', content: 'if a message does not appear to be addressed to you reply with \'no response\'. if the user appears to be addressing other users wihout explicitly including you reply with \'no response\''}];
+                            
+        this.setName(dataController.appdata.guilds[guildid].channels[channelid].name)
+        this.setPrompt(dataController.appdata.guilds[guildid].channels[channelid].initial_prompt);
     }
 
     async request(message) {
-        const noresponseregex = /[nN][oO][\s,.]*[rR][eE][sS][pP][oO][nN][sS][eE][,.]*/;
+        //const noresponseregex = /[nN][oO][\s,.]*[rR][eE][sS][pP][oO][nN][sS][eE][,.]*/;
         console.log(`attempting to send message to gpt`);
-        this.chathistory.push({ role: 'user', content: message.content });
+        //console.log(this.chathistory[NAME_INDEX], this.chathistory[INITIAL_PROMPT_INDEX])
+        this.chathistory.push({ role: `user`, content: `${message.author.username}:${message.content}` });
         let responsestream = await this.openai.chat.completions.create({
             messages: this.chathistory,
             model: 'gpt-4-turbo-preview',
@@ -24,8 +32,8 @@ module.exports = class Conversation {
             stream: true,
         });
         console.log(`gpt responds`);
-        const responseManager = new ResponseManager();
-        const response = await responseManager.sendResponse(responsestream, message.channel);
+        const responseHandler = new ResponseHandler();
+        const response = await responseHandler.sendResponse(responsestream, message.channel);
         /*if(response.match(noresponseregex)){
             this.chathistory.pop();
             return -1;
@@ -34,34 +42,51 @@ module.exports = class Conversation {
         this.chathistory.push({ role: 'assistant', content: response});
         let fullchathistory = '';
         this.chathistory.forEach((msg) => fullchathistory += msg.content)
-        if(fullchathistory.length > 500){
+        console.log(fullchathistory);
+        if(fullchathistory.length > 20000){
             this.summarize();
         }
         return response;
     }
 
     async summarize(){
-        let summaryportion = this.chathistory.slice(1, Math.ceil(this.chathistory.length/2.0));
-            summaryportion.push({role: 'user', content: 'summarize the conversation so far in 1000 characters or less'});
+        let summaryportion = this.chathistory.slice(3, Math.ceil(this.chathistory.length/2.0));
+            summaryportion.push({role: 'system', content: 'summarize this conversation in 1000 characters or less, make sure each topic discussed is represented'});
             const summary = await this.openai.chat.completions.create({
                 messages: summaryportion,
                 model: 'gpt-4-turbo-preview',
                 temperature: 1.0,
                 stream: false,
             });
-            this.chathistory = [{ role: 'system', content: 'if a message does not appear to be addressed to you reply with \'no response\'. if the user appears to be addressing other users wihout explicitly including you reply with \'no response\''},
-                                { role: 'system', content: this.intialprompt},
+            this.chathistory = [{ role: 'system', content: `your name is ${this.name}`},
+                                { role: 'system', content: this.initialprompt},
+                                { role: 'system', content: 'if a message does not appear to be addressed to you reply with \'no response\'. if the user appears to be addressing other users wihout explicitly including you reply with \'no response\''},
                                 { role: 'system', content: `here is a summary of the conversation so far: ${summary.choices[0].message.content}`}].concat(this.chathistory.slice(Math.ceil(this.chathistory.length/2.0) + 1, this.chathistory.length));
-            let fullchathistory = '';
-            this.chathistory.forEach((msg) => fullchathistory += msg.content);
+            //let fullchathistory = '';
+            //this.chathistory.forEach((msg) => fullchathistory += msg.content);
     }
 
-    async setprompt(newprompt){
-        if(typeof newprompt == String){
-            this.chathistory[1] = {role: 'system', content: newprompt};
+    async setPrompt(newprompt){
+        console.log(`setting prompt \"${newprompt}\"`);
+        if(typeof newprompt == "string"){
+            this.chathistory[INITIAL_PROMPT_INDEX] = {role: 'system', content: newprompt};
             this.initialprompt = newprompt;
-        }
-        else
+        } else if(newprompt === 0){
+            this.chathistory[INITIAL_PROMPT_INDEX] = {role: 'system', content: dataController.appdata.default_prompt};
+            this.initialprompt = dataController.appdata.default_prompt;
+        } else
             console.log('attempted to set non-string prompt');
+    }
+
+    async setName(newname){
+        console.log(`setting name \"${newname}\"`);
+        if(typeof newname == "string"){
+            this.chathistory[NAME_INDEX] = {role: 'system', content: `your name is ${newname}`};
+            this.name = newname;
+        } else if(newname === 0){
+            this.chathistory[NAME_INDEX] = {role: 'system', content: dataController.appdata.default_name};
+            this.name = dataController.appdata.default_name;
+        } else
+            console.log('attempted to set non-string name');
     }
 }

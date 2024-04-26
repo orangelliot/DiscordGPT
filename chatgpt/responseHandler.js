@@ -1,8 +1,10 @@
 
-module.exports = class ResponseManager{
+module.exports = class ResponseHandler{
+
     responsestream = [];
     chunkbuffer = '';
     noresponse = /[nN][oO][\s,.]*[rR][eE][sS][pP][oO][nN][sS][eE][,.]*/;
+
     async sendResponse(response, channel) {
         channel.sendTyping();
         let incode = false;

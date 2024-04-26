@@ -1,18 +1,15 @@
-const Conversation = require('./conversation')
+const Conversation = require('./conversation.js')
 
-module.exports = class ConversationManager{
-
-    constructor(){
-        this.activeconvos = new Object();
-    }
+module.exports = {
+    activeconvos: {},
 
     async request(message){
         if(!this.hasActiveConvo(message.channel.id)){
-            this.activeconvos[message.channel.id] = new Conversation();
+            this.activeconvos[message.channel.id] = new Conversation(message.guild.id, message.channel.id);
         }
         this.activeconvos[`${message.channel.id}.timestamp`] = Date.now();
         return await this.activeconvos[message.channel.id].request(message);
-    }
+    },
 
     cleanupInactiveConvos(){
         const timenow = Date.now();
@@ -23,7 +20,7 @@ module.exports = class ConversationManager{
                 console.log(`timed out conversation in ${key}`);
             }
         }
-    }
+    },
 
     hasActiveConvo(channelid){
         return this.activeconvos[channelid];
