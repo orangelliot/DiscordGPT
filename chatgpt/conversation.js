@@ -42,7 +42,7 @@ module.exports = class Conversation {
         this.chathistory.push({ role: 'assistant', content: response});
         let fullchathistory = '';
         this.chathistory.forEach((msg) => fullchathistory += msg.content)
-        console.log(fullchathistory);
+        //console.log(fullchathistory);
         if(fullchathistory.length > 20000){
             this.summarize();
         }
