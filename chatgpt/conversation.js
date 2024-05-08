@@ -25,15 +25,29 @@ module.exports = class Conversation {
         console.log(`attempting to send message to gpt`);
         //console.log(this.chathistory[NAME_INDEX], this.chathistory[INITIAL_PROMPT_INDEX])
         this.chathistory.push({ role: `user`, content: `${message.author.username}:${message.content}` });
-        let responsestream = await this.openai.chat.completions.create({
-            messages: this.chathistory,
-            model: 'gpt-4-turbo-preview',
-            temperature: 1.0,
-            stream: true,
-        });
+        let responsestream = null
+        try {
+            responsestream = await this.openai.chat.completions.create({
+                messages: this.chathistory,
+                model: 'gpt-4-turbo-preview',
+                temperature: 1.0,
+                stream: true,
+            });
+        } catch (error) {
+            if(error instanceof OpenAI.RateLimitError)
+                await message.channel.send('Rate limit reached, please try again later');
+            else
+                await message.channel.send(`The error ${error} occurred`);
+            return -1;
+        }
         console.log(`gpt responds`);
         const responseHandler = new ResponseHandler();
-        const response = await responseHandler.sendResponse(responsestream, message.channel);
+        let response = null;
+        try {
+            response = await responseHandler.sendResponse(responsestream, message.channel);
+        } catch (error) {
+            await message.channel.send(`The error ${error} occurred`);
+        }
         /*if(response.match(noresponseregex)){
             this.chathistory.pop();
             return -1;
