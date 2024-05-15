@@ -1,10 +1,12 @@
 const OpenAI = require('openai');
 const ResponseHandler = require('./responseHandler.js');
+const { model } = require('../config.json');
 const dataController = require('../data/dataController.js');
 require('dotenv').config()
 
 NAME_INDEX = 0
 INITIAL_PROMPT_INDEX = 1
+NO_RESPONSE_STRING = 'if a message does not appear to be addressed to you reply with \'no response\'. if the user appears to be addressing other users wihout explicitly including you reply with \'no response\'';
 
 module.exports = class Conversation {
     constructor(guildid, channelid) {
@@ -14,7 +16,7 @@ module.exports = class Conversation {
         });
         this.chathistory = [{ role: 'system', content: 0},
                             { role: 'system', content: 0},
-                            { role: 'system', content: 'if a message does not appear to be addressed to you reply with \'no response\'. if the user appears to be addressing other users wihout explicitly including you reply with \'no response\''}];
+                            { role: 'system', content: NO_RESPONSE_STRING}];
                             
         this.setName(dataController.appdata.guilds[guildid].channels[channelid].name)
         this.setPrompt(dataController.appdata.guilds[guildid].channels[channelid].initial_prompt);
@@ -24,12 +26,12 @@ module.exports = class Conversation {
         //const noresponseregex = /[nN][oO][\s,.]*[rR][eE][sS][pP][oO][nN][sS][eE][,.]*/;
         console.log(`attempting to send message to gpt`);
         //console.log(this.chathistory[NAME_INDEX], this.chathistory[INITIAL_PROMPT_INDEX])
-        this.chathistory.push({ role: `user`, content: `${message.author.username}:${message.content}` });
         let responsestream = null
+        console.log(this.chathistory);
         try {
             responsestream = await this.openai.chat.completions.create({
                 messages: this.chathistory,
-                model: 'gpt-4-turbo-preview',
+                model: model,
                 temperature: 1.0,
                 stream: true,
             });
@@ -37,7 +39,7 @@ module.exports = class Conversation {
             if(error instanceof OpenAI.RateLimitError)
                 await message.channel.send('Rate limit reached, please try again later');
             else
-                await message.channel.send(`The error ${error} occurred`);
+                await message.channel.send(error);
             return -1;
         }
         console.log(`gpt responds`);
@@ -46,7 +48,7 @@ module.exports = class Conversation {
         try {
             response = await responseHandler.sendResponse(responsestream, message.channel);
         } catch (error) {
-            await message.channel.send(`The error ${error} occurred`);
+            await message.channel.send(error);
         }
         /*if(response.match(noresponseregex)){
             this.chathistory.pop();
@@ -74,7 +76,7 @@ module.exports = class Conversation {
             });
             this.chathistory = [{ role: 'system', content: `your name is ${this.name}`},
                                 { role: 'system', content: this.initialprompt},
-                                { role: 'system', content: 'if a message does not appear to be addressed to you reply with \'no response\'. if the user appears to be addressing other users wihout explicitly including you reply with \'no response\''},
+                                { role: 'system', content: NO_RESPONSE_STRING},
                                 { role: 'system', content: `here is a summary of the conversation so far: ${summary.choices[0].message.content}`}].concat(this.chathistory.slice(Math.ceil(this.chathistory.length/2.0) + 1, this.chathistory.length));
             //let fullchathistory = '';
             //this.chathistory.forEach((msg) => fullchathistory += msg.content);
