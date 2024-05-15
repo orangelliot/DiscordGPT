@@ -26,6 +26,7 @@ module.exports = class Conversation {
         //const noresponseregex = /[nN][oO][\s,.]*[rR][eE][sS][pP][oO][nN][sS][eE][,.]*/;
         console.log(`attempting to send message to gpt`);
         //console.log(this.chathistory[NAME_INDEX], this.chathistory[INITIAL_PROMPT_INDEX])
+        this.chathistory.push({role: 'user', content: `${message.author.username}:${message.content}`});
         let responsestream = null
         console.log(this.chathistory);
         try {
